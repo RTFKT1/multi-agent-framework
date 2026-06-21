@@ -55,7 +55,7 @@ def intake_agent(state: DisasterState) -> DisasterState:
     """
 
     response = llm.invoke([HumanMessage(content = prompt)])
-    print("Raw intake response:", response.content)
+
     try:
         extracted = parse_llm_json(response.content)
     except json.JSONDecodeError as e:

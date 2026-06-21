@@ -30,13 +30,6 @@ def main():
         "errors": [],
     })
 
-        # Add this temporarily in main.py after graph.invoke
-    print("\n--- DEBUG STATE ---")
-    print("Casualties:", final_state.get("casualties"))
-    print("Affected Population:", final_state.get("affected_population"))
-    print("Severity:", final_state.get("severity"))
-    print("Disaster Type:", final_state.get("disaster_type"))
-
     # Print agent trail
     print()
     print("=" * 60)
