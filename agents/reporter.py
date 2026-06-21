@@ -14,12 +14,17 @@ def reporter_agent(state: DisasterState) -> DisasterState:
     print("📝 Reporter Agent running...")
 
     prompt = f"""
-    You are a disaster response communications officer. Based on all the data below, write a clear and concise situation report (SITREP).
+    You are a disaster response communications officer. Write a SITREP for the CURRENT incident ONLY.
 
-    CRITICAL RULES:
-    - Use ONLY the exact numbers provided below. Do not say "None" if a number is provided.
-    - If a value is None or null, write "Not yet confirmed" instead.
-    - Never contradict the data provided.
+    STRICT RULES — VIOLATIONS ARE NOT ACCEPTABLE:
+    - The CURRENT INCIDENT DATA below is your ONLY source for facts, numbers, and location.
+    - NEVER use any location, date, casualties, or population figures from past incidents.
+    - Past incidents are provided ONLY to inform resource and strategy decisions.
+    - Current Location is: {state.get("location")} — use this, nothing else.
+    - Current Casualties are: {state.get("casualties")} dead — use this exact number.
+    - Current Injuries are: {state.get("injuries")} injured — use this exact number.
+    - Current Affected Population: {state.get("affected_population")} — use this exact number.
+    - If a value is None, write "Not yet confirmed".
 
     The SITREP should have these sections:
     1. INCIDENT SUMMARY
@@ -29,11 +34,10 @@ def reporter_agent(state: DisasterState) -> DisasterState:
     5. RESOURCES DEPLOYED
     6. CRITICAL RISKS & GAPS
     7. NEXT STEPS & ESTIMATED RESOLUTION
+    8. LESSONS FROM SIMILAR INCIDENTS (use past incidents here ONLY)
 
-    Full Incident Data:
+    CURRENT INCIDENT DATA:
     - Disaster Type: {state.get("disaster_type")}
-    - Past Similar Incidents: {state.get("past_incidents") or "No similar past incidents found."}
-    Reference past incidents where relevant to provide context in the SITREP.
     - Location: {state.get("location")}
     - Severity: {state.get("severity")}
     - Affected Population: {state.get("affected_population")}
@@ -48,7 +52,10 @@ def reporter_agent(state: DisasterState) -> DisasterState:
     - Actions Taken: {', '.join(state.get("actions_taken") or [])}
     - Estimated Response Time: {state.get("estimated_response_time")}
     - Started At: {state.get("started_at")}
-"""
+
+    PAST SIMILAR INCIDENTS (for section 8 ONLY):
+    {state.get("past_incidents") or "No similar past incidents found."}
+    """
 
     response = llm.invoke([HumanMessage(content=prompt)])
     

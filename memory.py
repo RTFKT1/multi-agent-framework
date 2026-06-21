@@ -3,7 +3,7 @@ import chromadb
 from chromadb.config import Settings
 from langchain_ollama import OllamaEmbeddings
 
-embeddings = OllamaEmbeddings(model = "llama3.2")
+embeddings = OllamaEmbeddings(model = "nomic-embed-text")
 
 client = chromadb.PersistentClient(path = "./chroma_db")
 collection = client.get_or_create_collection(name = "incidents")
@@ -52,7 +52,7 @@ def get_similar_incidents(current_state: dict, n_results: int = 3) -> list:
     Infrastructure Damage: {', '.join(current_state.get("infrastructure_damage") or [])}
     """
             
-    query_vector = embeddings.embed_query(query_vector)
+    query_vector = embeddings.embed_query(query)
 
     results = collection.query(
     query_embeddings=[query_vector],
@@ -62,7 +62,7 @@ def get_similar_incidents(current_state: dict, n_results: int = 3) -> list:
     if not results or not results["documents"][0]:
         return []
     
-    
+
     filtered = []
     for doc, distance in zip(results["documents"][0], results["distances"][0]):
         similarity = 1 - distance
