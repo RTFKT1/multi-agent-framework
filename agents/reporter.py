@@ -61,5 +61,5 @@ def reporter_agent(state: DisasterState) -> DisasterState:
         "situation_report": response.content,
         "current_agent": "reporter",
         "completed_at": datetime.now().isoformat(),
-        "agent_logs": (state.get("agent_logs") or []) + [log_entry],
+        "agent_logs": [log_entry],
     }

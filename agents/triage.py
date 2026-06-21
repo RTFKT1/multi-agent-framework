@@ -78,5 +78,5 @@ def triage_agent(state: DisasterState) -> DisasterState:
         "estimated_response_time": extracted.get("estimated_response_time"),
         "actions_taken": extracted.get("priority_actions", []),
         "current_agent": "triage",
-        "agent_logs": (state.get("agent_logs") or []) + [log_entry],
+        "agent_logs": [log_entry],
     }

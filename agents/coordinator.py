@@ -87,5 +87,5 @@ def coordinator_agent(state: DisasterState) -> DisasterState:
         "actions_taken": extracted.get("coordinated_actions", []),
         "current_agent": "coordinator",
         "resource_gaps": extracted.get("resource_gaps", []), 
-        "agent_logs": (state.get("agent_logs") or []) + [log_entry],
+        "agent_logs": [log_entry],
     }

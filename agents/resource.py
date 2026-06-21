@@ -85,5 +85,5 @@ def resource_agent(state: DisasterState) -> DisasterState:
         "resources_available": extracted.get("resources_available", []),
         "teams_dispatched": extracted.get("teams_dispatched", []),
         "current_agent": "resource",
-        "agent_logs": (state.get("agent_logs") or []) + [log_entry],
+        "agent_logs": [log_entry],
     }
