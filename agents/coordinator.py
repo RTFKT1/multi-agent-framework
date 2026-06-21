@@ -53,6 +53,9 @@ def coordinator_agent(state: DisasterState) -> DisasterState:
 
     Full Incident Data:
     - Disaster Type: {state.get("disaster_type")}
+    - Past Similar Incidents:{state.get("past_incidents") or "No similar past incidents found."}
+    Use the past incidents above to inform your coordination decisions — 
+    what worked before, what resource gaps occurred, and what to avoid.
     - Location: {state.get("location")}
     - Severity: {state.get("severity")}
     - Affected Population: {state.get("affected_population")}

@@ -9,6 +9,10 @@ class AgentLog(TypedDict):
 class DisasterState(TypedDict):
     # Input
     raw_report: str
+
+    #Past Incidents
+    past_incidents: Optional[str]
+    
     # Triage
     disaster_type: Optional[str]
     severity: Optional[str]

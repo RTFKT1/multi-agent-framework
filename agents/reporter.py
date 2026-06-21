@@ -32,6 +32,8 @@ def reporter_agent(state: DisasterState) -> DisasterState:
 
     Full Incident Data:
     - Disaster Type: {state.get("disaster_type")}
+    - Past Similar Incidents: {state.get("past_incidents") or "No similar past incidents found."}
+    Reference past incidents where relevant to provide context in the SITREP.
     - Location: {state.get("location")}
     - Severity: {state.get("severity")}
     - Affected Population: {state.get("affected_population")}
