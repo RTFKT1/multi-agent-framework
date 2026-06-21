@@ -21,10 +21,15 @@ def parse_llm_json(content: str) -> dict:
     # Fix trailing commas
     content = re.sub(r",\s*}", "}", content)
     content = re.sub(r",\s*]", "]", content)
-    
-    # Add missing closing brace if needed
+
+    # Fix missing closing brackets and braces
     open_braces = content.count("{")
     close_braces = content.count("}")
+    open_brackets = content.count("[")
+    close_brackets = content.count("]")
+
+    if open_brackets > close_brackets:
+        content += "]" * (open_brackets - close_brackets)
     if open_braces > close_braces:
         content += "}" * (open_braces - close_braces)
 
@@ -40,11 +45,11 @@ def resource_agent(state: DisasterState) -> DisasterState:
 
     Respond ONLY with a valid JSON object with these exact fields:
     {{
-    "resources_needed": ["list", "of", "required", "resources"],
-    "resources_available": ["list", "of", "typically", "available", "resources"],
-    "teams_dispatched": ["list", "of", "teams", "to", "dispatch"],
-    "resource_gaps": ["resources", "that", "may", "be", "unavailable"],
-    "notes": "any additional resource observations"
+    "resources_needed": ["Medical Teams", "Shelter Units"],
+    "resources_available": ["Medical Teams", "Water Supplies"],
+    "teams_dispatched": ["Search and Rescue Team", "Medical Response Team"],
+    "resource_gaps": ["Power Generators", "Communication Devices"],
+    "notes": "Additional notes here"
     }}
 
     Incident Data:
