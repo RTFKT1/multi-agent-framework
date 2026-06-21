@@ -12,6 +12,7 @@ llm = ChatOllama(model="llama3.2", temperature=0)
 
 def reporter_agent(state: DisasterState) -> DisasterState:
     print("📝 Reporter Agent running...")
+    print("DEBUG past_incidents in reporter:", state.get("past_incidents"))
 
     prompt = f"""
     You are a disaster response communications officer. Write a SITREP for the CURRENT incident ONLY.
@@ -35,6 +36,13 @@ def reporter_agent(state: DisasterState) -> DisasterState:
     6. CRITICAL RISKS & GAPS
     7. NEXT STEPS & ESTIMATED RESOLUTION
     8. LESSONS FROM SIMILAR INCIDENTS (use past incidents here ONLY)
+
+    After section 7, you MUST include this section:
+
+    **LESSONS FROM SIMILAR INCIDENTS**
+    Based on the past similar incidents provided, list 2-3 specific lessons or strategies 
+    that should be applied to this response. Reference the past incident location and type explicitly.
+    If no similar incidents were found, write "No historical precedent available."
 
     CURRENT INCIDENT DATA:
     - Disaster Type: {state.get("disaster_type")}
