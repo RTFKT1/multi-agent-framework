@@ -41,3 +41,34 @@ def save_incident(state: dict, thread_id: str):
         }]
     )
     print(f"Data point uploaded to database with thread_id: {thread_id}")
+
+    #Retrieve
+def get_similar_incidents(current_state: dict, n_results: int = 3) -> list:
+    query = f"""
+    Disaster Type: {current_state.get("disaster_type")}
+    Location: {current_state.get("location")}
+    Severity: {current_state.get("severity")}
+    Casualties: {current_state.get("casualties")}
+    Infrastructure Damage: {', '.join(current_state.get("infrastructure_damage") or [])}
+    """
+            
+    query_vector = embeddings.embed_query(query_vector)
+
+    results = collection.query(
+    query_embeddings=[query_vector],
+    n_results=n_results,
+    )
+
+    if not results or not results["documents"][0]:
+        return []
+    return results["documents"][0]
+
+def format_past_incidents(incidents: list) -> str:
+    if not incidents:
+        return "No similar past incidents found."
+
+    lines = ["SIMILAR PAST INCIDENTS FOR REFERENCE:"]
+    for i, incident in enumerate(incidents, 1):
+        lines.append(f"\n--- Similar Incident {i} ---")
+        lines.append(incident)
+    return "\n".join(lines)
