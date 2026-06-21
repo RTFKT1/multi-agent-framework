@@ -47,6 +47,7 @@ def coordinator_agent(state: DisasterState) -> DisasterState:
     "escalation_required": true/false,
     "escalation_reason": "reason if escalation needed or null",
     "estimated_resolution_time": "e.g. 12 hours, 3 days",
+    "resource_gaps": ["Resource that is missing", "Another gap"],
     "notes": "any additional coordination notes"
     }}
 
@@ -85,5 +86,6 @@ def coordinator_agent(state: DisasterState) -> DisasterState:
         **state,
         "actions_taken": extracted.get("coordinated_actions", []),
         "current_agent": "coordinator",
-        "agent_logs": (state.get("agent_logs") or []) + [log_entry],
+        "resource_gaps": extracted.get("resource_gaps", []), 
+        "agent_logs": [log_entry],
     }

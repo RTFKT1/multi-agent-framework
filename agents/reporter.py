@@ -7,27 +7,6 @@ from langchain_core.messages import HumanMessage
 from state import DisasterState
 from datetime import datetime
 
-import re
-
-def parse_llm_json(content: str) -> dict:
-    content = content.strip()
-    content = re.sub(r"```json|```", "", content).strip()
-    
-    match = re.search(r"\{.*", content, re.DOTALL)
-    if match:
-        content = match.group(0)
-    
-    # Fix trailing commas
-    content = re.sub(r",\s*}", "}", content)
-    content = re.sub(r",\s*]", "]", content)
-    
-    # Add missing closing brace if needed
-    open_braces = content.count("{")
-    close_braces = content.count("}")
-    if open_braces > close_braces:
-        content += "}" * (open_braces - close_braces)
-
-    return json.loads(content)
 
 llm = ChatOllama(model="llama3.2", temperature=0)
 
@@ -35,7 +14,12 @@ def reporter_agent(state: DisasterState) -> DisasterState:
     print("📝 Reporter Agent running...")
 
     prompt = f"""
-    You are a disaster response communications officer. Based on all the data below, write a clear and concise situation report (SITREP) that can be shared with senior officials and the public.
+    You are a disaster response communications officer. Based on all the data below, write a clear and concise situation report (SITREP).
+
+    CRITICAL RULES:
+    - Use ONLY the exact numbers provided below. Do not say "None" if a number is provided.
+    - If a value is None or null, write "Not yet confirmed" instead.
+    - Never contradict the data provided.
 
     The SITREP should have these sections:
     1. INCIDENT SUMMARY
@@ -46,27 +30,26 @@ def reporter_agent(state: DisasterState) -> DisasterState:
     6. CRITICAL RISKS & GAPS
     7. NEXT STEPS & ESTIMATED RESOLUTION
 
-    Write in clear, professional language. Be factual and concise.
-
     Full Incident Data:
     - Disaster Type: {state.get("disaster_type")}
     - Location: {state.get("location")}
     - Severity: {state.get("severity")}
     - Affected Population: {state.get("affected_population")}
-    - Casualties: {state.get("casualties")}
-    - Injuries: {state.get("injuries")}
+    - Casualties: {state.get("casualties")} dead
+    - Injuries: {state.get("injuries")} injured
     - Weather Conditions: {state.get("weather_conditions")}
-    - Infrastructure Damage: {state.get("infrastructure_damage")}
-    - Resources Needed: {state.get("resources_needed")}
-    - Resources Available: {state.get("resources_available")}
-    - Teams Dispatched: {state.get("teams_dispatched")}
-    - Actions Taken: {state.get("actions_taken")}
+    - Infrastructure Damage: {', '.join(state.get("infrastructure_damage") or [])}
+    - Resources Needed: {', '.join(state.get("resources_needed") or [])}
+    - Resources Available: {', '.join(state.get("resources_available") or [])}
+    - Resource Gaps: {', '.join(state.get("resource_gaps") or [])}
+    - Teams Dispatched: {', '.join(state.get("teams_dispatched") or [])}
+    - Actions Taken: {', '.join(state.get("actions_taken") or [])}
     - Estimated Response Time: {state.get("estimated_response_time")}
     - Started At: {state.get("started_at")}
-    """
+"""
 
     response = llm.invoke([HumanMessage(content=prompt)])
-
+    
     log_entry = {
         "agent": "reporter",
         "timestamp": datetime.now().isoformat(),
@@ -78,5 +61,5 @@ def reporter_agent(state: DisasterState) -> DisasterState:
         "situation_report": response.content,
         "current_agent": "reporter",
         "completed_at": datetime.now().isoformat(),
-        "agent_logs": (state.get("agent_logs") or []) + [log_entry],
+        "agent_logs": [log_entry],
     }
