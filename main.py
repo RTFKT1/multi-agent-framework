@@ -24,7 +24,7 @@ def main():
     # Build and run the graph
     graph = build_graph()
     
-    final_state = graph.invoke({
+    final_state = graph.invoke({a
         "raw_report": raw_report,
         "agent_logs": [],
         "errors": [],
