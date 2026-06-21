@@ -61,7 +61,18 @@ def get_similar_incidents(current_state: dict, n_results: int = 3) -> list:
 
     if not results or not results["documents"][0]:
         return []
-    return results["documents"][0]
+    
+    
+    filtered = []
+    for doc, distance in zip(results["documents"][0], results["distances"][0]):
+        similarity = 1 - distance
+        if similarity >= 0.55:
+            print(f"✅ Similar incident found (similarity: {similarity:.2f})")
+            filtered.append(doc)
+        else:
+            print(f"⚠️ Incident below threshold (similarity: {similarity:.2f}) — skipped")
+
+    return filtered
 
 def format_past_incidents(incidents: list) -> str:
     if not incidents:
